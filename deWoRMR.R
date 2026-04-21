@@ -48,7 +48,7 @@ read_html_retry <- function(url, max_attempts = 5, wait_seconds = 2) {
     }, error = function(e) {
       # What to do if an error occurs
       message(paste0("\nConnection failed on attempt ", attempt, ". Waiting ", attempt * wait_seconds, " seconds..."))
-      Sys.sleep(attempts * wait_seconds) # Pause execution
+      Sys.sleep(attempt * wait_seconds) # Pause execution
       return(NULL) # Return NULL to indicate failure for this attempt
     })
     
