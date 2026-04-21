@@ -4,7 +4,28 @@
 #ONLY INPUT REQUIRED: URL to the page of the target clade (starting point)
 #In this case Echinoidea, but search for your clade of interest in WoRMS and
 #paste the correct link below
-starting_url = 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=123082'
+## starting_url = 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=123082'
+starting_url = 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=135568' # Lepeophtheirus
+
+# Arthropoda:
+# starting_url = 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=1066' # Crustacea
+# starting_url = 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=1277'  # Myriapoda
+# starting_url = 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=1274'  # Chelicherata - gets Rda, fails extraction, unexpected { in "  }"?
+# Chelicherata subgroups:
+# starting_url = 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=1300' # Arachnida
+# starting_url = 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=150507' # Merostomata
+# starting_url = 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=1302' # Pycno-something
+
+# Crustacea subgroups
+# starting_url = 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=1598172'  # Allotriocarida
+# starting_url = 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=845959'   # Multicrustacea (huge)
+starting_url = 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=845957'    # Oligostraca
+
+# All of these fail?
+# starting_url = 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=877222' # Trilobitomorpha X - failed
+# starting_url = 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=1598178' # Pancrustacea - fails strsplit
+# starting_url = 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=1598179' # Tetraconata - fails
+# starting_url = 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=1000022' # A. incartae sedis - fails
 
 #Install (optionally) and load required packages
 packages <- c('rvest','stringr','dplyr')
@@ -36,7 +57,11 @@ already_visited = sapply(strsplit(starting_url, 'id='), '[', 2)
 #loop that keeps going as long as there are websites that still need visiting
 i = 1
 while(i <= length(links_to_visit)) {
+
   cat(i, "/", length(links_to_visit), "\r")
+  if(!(length(links_to_visit) %% 100)){
+     cat("\n")
+  }
 
   #if we have not already visited this website, go in, otherwise simply delete
   if(!links_to_visit[i] %in% already_visited) {
