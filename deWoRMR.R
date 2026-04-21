@@ -36,6 +36,8 @@ already_visited = sapply(strsplit(starting_url, 'id='), '[', 2)
 #loop that keeps going as long as there are websites that still need visiting
 i = 1
 while(i <= length(links_to_visit)) {
+  cat(i, "/", length(links_to_visit), "\r")
+
   #if we have not already visited this website, go in, otherwise simply delete
   if(!links_to_visit[i] %in% already_visited) {
     url = paste0(worms_base, links_to_visit[i])
