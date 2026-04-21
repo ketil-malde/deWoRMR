@@ -151,6 +151,10 @@ save(species, file = 'taxonomy_raw.Rda')
 ###                   Give the data a more useful format                     ###
 ################################################################################
 
+if(length(species) == 0) {
+  stop("No species were found. The scrape may have timed out or hit an invalid page.")
+}
+
 taxonomy = sapply(strsplit(species, ', '), '[', 2)
 
 #find a list of subgenera
