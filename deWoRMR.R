@@ -127,7 +127,7 @@ taxonomy = sapply(strsplit(species, ', '), '[', 2)
 
 #find a list of subgenera
 subgenera = c()
-for(i in 1:length(taxonomy)) {
+for(i in seq_along(taxonomy)) {
   this_taxonomy_splitted = unlist(strsplit(taxonomy[i], ' '))
   if(any(this_taxonomy_splitted == '(Subgenus)')) {
     if(any(this_taxonomy_splitted == '†')) {
@@ -154,7 +154,7 @@ df = df %>% rename_at(vars(colnames(df)), ~ hierarchy) %>%
   mutate_if(is.logical, as.character)
 
 #fill in the taxonomic df based on the rank hierarchy
-for(i in 1:length(taxonomy)) {
+for(i in seq_along(taxonomy)) {
   a = unlist(strsplit(taxonomy[i], ' '))
   matches = which(a %in% colnames(df))
   for(j in length(matches):1) {
@@ -175,7 +175,7 @@ valid_species = str_squish(gsub("[\r\n]", "", valid_species))
 valid_species[is.na(valid_species)] = 'NA'
 
 #get rid of authorities for valid species
-for(i in 1:length(valid_species)) {
+for(i in seq_along(valid_species)) {
   if(valid_species[i] != 'NA') {
     clean_sp = valid_species[i]
     while(!clean_sp %in% df$`(Species)`) {
@@ -233,7 +233,7 @@ to_sort = to_sort[2:(length(to_sort)-2)]
 #to find the relative position of taxonomic ranks
 taxonomy = taxonomy[which(aphiaID %in% unlist(final_taxonomy$aphiaID))]
 split_taxonomy = strsplit(taxonomy, ' ')
-for(i in 1:length(split_taxonomy)) {
+for(i in seq_along(split_taxonomy)) {
   split_taxonomy[[i]] = split_taxonomy[[i]][grep('\\(', split_taxonomy[[i]])]
   split_taxonomy[[i]] = split_taxonomy[[i]][split_taxonomy[[i]] %in% 
                                               paste0('(', 
@@ -247,7 +247,7 @@ longest = which.max(sapply(split_taxonomy, length))
 starting_order = split_taxonomy[[longest]]
 still_missing = to_sort[which(!to_sort %in% gsub('^.|.$', '', starting_order))]
 while(length(starting_order) != length(to_sort)) {
-  for(i in 1:length(still_missing)) {
+  for(i in seq_along(still_missing)) {
     smaller_split_taxonomy = split_taxonomy[which(sapply(split_taxonomy, function(x) 
       any(grepl(still_missing[i], x))))]
     
