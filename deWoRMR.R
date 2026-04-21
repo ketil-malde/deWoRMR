@@ -36,11 +36,39 @@ library(rvest)
 library(stringr)
 library(dplyr)
 
+read_html_retry <- function(url, max_attempts = 5, wait_seconds = 2) {
+  attempt <- 1
+  
+  while(attempt <= max_attempts) {
+    # tryCatch attempts the code, and catches any errors gracefully
+    result <- tryCatch({
+      # The code we want to try
+      read_html(url) 
+      
+    }, error = function(e) {
+      # What to do if an error occurs
+      message(paste0("\nConnection failed on attempt ", attempt, ". Waiting ", attempt * wait_seconds, " seconds..."))
+      Sys.sleep(attempts * wait_seconds) # Pause execution
+      return(NULL) # Return NULL to indicate failure for this attempt
+    })
+    
+    # If result is not NULL, read_html succeeded! Return the data.
+    if (!is.null(result)) {
+      return(result)
+    }
+    
+    attempt <- attempt + 1
+  }
+  
+  # If the loop finishes and max_attempts is reached, throw a hard error
+  stop(paste("Failed to connect to", url, "after", max_attempts, "attempts."))
+}
+
 ################################  PART 1  ######################################
 ###    Traverse the taxonomic hierarchy of WoRMS and finds URLs of species   ###
 ################################################################################
 
-read_url = read_html(starting_url)
+read_url = read_html_retry(starting_url)
 
 #this is the URL address of all WoRMS pages
 worms_base = 'https://www.marinespecies.org/aphia.php?p=taxdetails&id='
@@ -66,7 +94,7 @@ while(i <= length(links_to_visit)) {
   #if we have not already visited this website, go in, otherwise simply delete
   if(!links_to_visit[i] %in% already_visited) {
     url = paste0(worms_base, links_to_visit[i])
-    read_url = read_html(url)
+    read_url = read_html_retry(url)
     
     #what kind of taxon are we visiting?
     taxon_level = str_squish(gsub("[\r\n]", "", 
@@ -199,7 +227,7 @@ final_taxonomy = df %>% mutate(aphiaID = aphiaID, Status = status,
   dplyr::select(aphiaID, everything())
 
 #make sure we didn't include taxa from other clades (trust me, it happens)
-read_url = read_html(starting_url)
+read_url = read_html_retry(starting_url)
 this_taxonomy = html_text(html_nodes(read_url, 
                                      '#Classification .leave_image_space'))
 this_taxonomy = str_squish(gsub("[\r\n]", "", this_taxonomy))
