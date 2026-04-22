@@ -210,7 +210,7 @@ valid_species[is.na(valid_species)] = 'NA'
 for(i in seq_along(valid_species)) {
   if(valid_species[i] != 'NA') {
     clean_sp = valid_species[i]
-    while(!clean_sp %in% df$`(Species)`) {
+    while(length(clean_sp) > 0 && !clean_sp %in% df$`(Species)`) {
       clean_sp = unlist(strsplit(clean_sp, ' '))
       
       #couldn't be cleaned of authorities, keep full name
@@ -218,10 +218,15 @@ for(i in seq_along(valid_species)) {
         clean_sp = valid_species[i]
         break
       }
-      
-      clean_sp = paste(clean_sp[1:(length(clean_sp)-1)], collapse = ' ')
+      if(length(clean_sp) > 1){      # breaks on short sequences?
+          clean_sp = paste(clean_sp[1:(length(clean_sp)-1)], collapse = ' ')
+      }
     }
-    valid_species[i] = clean_sp
+    if(length(clean_sp) > 0){
+        valid_species[i] = clean_sp
+    }else{
+        valid_species[i] <- 'NA'
+    }
   }
 }
 
